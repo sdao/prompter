@@ -25,9 +25,10 @@
     };
     
     $( window ).load(resizeFunc);
-    
     $( window ).resize(resizeFunc);
-
+    $( window ).on( "unload", function() {
+      window.opener.presenterDidClose();
+    });
     </script>
   </head>
   

@@ -19,20 +19,19 @@
     
     function syncController(width, height, ofs) {
       $( "#prompter-control-main" ).width(width);
+      $( "#prompter-control" ).scrollTop(ofs);
+      
+      recalcSafeFrameOffset();
       $( "#prompter-safe-frame" ).show();
       $( "#prompter-safe-frame" ).width(width);
       $( "#prompter-safe-frame" ).height(height);
-      recalcSafeFrameOffset();
-      $( "#prompter-control" ).scrollTop(ofs);
       $( "#prompter-safe-frame" ).css("top", (ofs + safeFrameOffset) + "px");
-    }
-    
-    function registerPresenterScroller(scroller) {
-      shared.presenterScroller = scroller;
+      var pos = $( ".prompter-main" ).offset();
+      $( "#prompter-safe-frame" ).css("left", pos.left + "px");
     }
     
     function recalcSafeFrameOffset() {
-      if (shared.presenter != null && !shared.presenter.closed && shared.presenterScroller != null) {
+      if ($( "#prompter-safe-frame" ).is(":visible")) {
         var safeFrameHeight = $( "#prompter-safe-frame" ).height();
         var containerHeight = $( "#prompter-control" ).height();
         safeFrameOffset = containerHeight / 2 - safeFrameHeight / 2;
@@ -46,6 +45,17 @@
         shared.presenterScroller.scrollTop(scrollTop);
         $( "#prompter-safe-frame" ).css("top", (scrollTop + safeFrameOffset) + "px");
       }
+    }
+    
+    function registerPresenterScroller(scroller) {
+      shared.presenterScroller = scroller;
+    }
+    
+    function presenterDidClose() {
+      shared.presenter = null;
+      shared.presenterScroller = null;
+      
+      $( "#prompter-safe-frame" ).hide();
     }
     
     $(function() {
@@ -92,7 +102,7 @@
   <body>
     <div class="flex-container" id="presenter">
       <div id="prompter-options">
-        <button>Present...</button>
+        <button>Presenter Window...</button>
         <div class="status">Currently in edit mode</div>
       </div>
       <div id="prompter-control">
