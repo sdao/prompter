@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prompter</title>
+    <link rel="stylesheet" href="prompter.css" />
+		<meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="http:////ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
+    <script src="ckeditor/ckeditor.js"></script>
+    <script src="ckeditor/adapters/jquery.js"></script>
+    <script src="modernizr.custom.47613.js"></script>
+    
+    <script>
+    
+    var shared = { presenter: null, presenterScroller: null };
+    var safeFrameOffset = 0;
+    
+    function syncController(width, height, ofs) {
+      $( "#prompter-control-main" ).width(width);
+      $( "#prompter-safe-frame" ).show();
+      $( "#prompter-safe-frame" ).width(width);
+      $( "#prompter-safe-frame" ).height(height);
+      recalcSafeFrameOffset();
+      $( "#prompter-control" ).scrollTop(ofs);
+      $( "#prompter-safe-frame" ).css("top", (ofs + safeFrameOffset) + "px");
+    }
+    
+    function registerPresenterScroller(scroller) {
+      shared.presenterScroller = scroller;
+    }
+    
+    function recalcSafeFrameOffset() {
+      if (shared.presenter != null && !shared.presenter.closed && shared.presenterScroller != null) {
+        var safeFrameHeight = $( "#prompter-safe-frame" ).height();
+        var containerHeight = $( "#prompter-control" ).height();
+        safeFrameOffset = containerHeight / 2 - safeFrameHeight / 2;
+        $( "#prompter-top-spacer" ).height(safeFrameOffset);
+      }
+    }
+    
+    function syncPresenter() {
+      if (shared.presenter != null && !shared.presenter.closed && shared.presenterScroller != null) {
+        var scrollTop = $( "#prompter-control" ).scrollTop();
+        shared.presenterScroller.scrollTop(scrollTop);
+        $( "#prompter-safe-frame" ).css("top", (scrollTop + safeFrameOffset) + "px");
+      }
+    }
+    
+    $(function() {
+      $( "input[type=submit], a, button" )
+        .button()
+        .click(function( event ) {
+          event.preventDefault();
+      });
+      
+      $( "#prompter-options button" )
+        .click(function( event ) {
+          if (shared.presenter == null || shared.presenter.closed) {
+            shared.presenter = window.open("present.html", "PresenterWindow", "resizable=yes, scrollbars=no, menubar=no");
+          } else {
+            shared.presenter.focus();
+          }
+      });
+      
+      $( "#prompter-control" ).scroll(syncPresenter);
+      
+      var readjustHeight = function() {
+        if (!Modernizr.flexbox) {
+          $( "#prompter-control" ).height($( "body" ).height() - $( "#prompter-options" ).height());
+        }
+      }
+      
+      $( window ).resize(function() {
+        readjustHeight();
+        recalcSafeFrameOffset();
+        syncPresenter();
+      });
+      
+      readjustHeight();
+    });
+    
+    $( document ).ready( function() {
+      $( "#prompter-control-main" ).ckeditor();
+      $( "#prompter-safe-frame" ).hide();
+    } );
+
+    </script>
+  </head>
+  
+  <body>
+    <div class="flex-container" id="presenter">
+      <div id="prompter-options">
+        <button>Present...</button>
+        <div class="status">Currently in edit mode</div>
+      </div>
+      <div id="prompter-control">
+        <div id="prompter-top-spacer">
+        </div>
+        <div class="prompter-main" id="prompter-control-main" contenteditable>
+          The Knights Who Say Ni demand a sacrifice! Where'd you get the coconuts? Ah, now we see the violence inherent in the system! 
+          You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person! I blow my nose at you, so-called 
+          Ah-thoor Keeng, you and all your silly English K-n-n-n-n-n-n-n-niggits! And the hat. She's a witch! Oh! Come and see the 
+          violence inherent in the system! Help, help, I'm being repressed!
+        </div>
+        <div id="prompter-safe-frame">
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

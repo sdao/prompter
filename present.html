@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Prompter - Presentation Mode</title>
+    <link rel="stylesheet" href="prompter.css" />
+		<meta charset="utf-8" />
+    
+    <link rel="stylesheet" href="http:////ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
+    <script src="ckeditor/ckeditor.js"></script>
+    <script src="ckeditor/adapters/jquery.js"></script>
+    
+    <script>    
+    
+    $( document ).ready(function() {
+      $( "#prompter-present-main" ).ckeditor();
+    });
+    
+    var resizeFunc = function() {
+      var $prompterMain = $( "#prompter-present-main" );
+      var $prompterContainer = $( "#prompter-present" );
+      window.opener.syncController($prompterMain.width(), $prompterContainer.height(), $prompterContainer.scrollTop());
+      window.opener.registerPresenterScroller($prompterContainer);
+    };
+    
+    $( window ).load(resizeFunc);
+    
+    $( window ).resize(resizeFunc);
+
+    </script>
+  </head>
+  
+  <body>
+    <div id="prompter-present">
+      <div class="prompter-main" id="prompter-present-main" contenteditable>
+        The Knights Who Say Ni demand a sacrifice! Where'd you get the coconuts? Ah, now we see the violence inherent in the system! 
+        You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person! I blow my nose at you, so-called 
+        Ah-thoor Keeng, you and all your silly English K-n-n-n-n-n-n-n-niggits! And the hat. She's a witch! Oh! Come and see the 
+        violence inherent in the system! Help, help, I'm being repressed!
+      </div>
+    </div>
+  </body>
+</html>
