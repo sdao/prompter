@@ -29,7 +29,7 @@
       $( "#prompter-safe-frame" ).show();
       $( "#prompter-safe-frame" ).width(width);
       $( "#prompter-safe-frame" ).height(height);
-      $( "#prompter-safe-frame" ).css("top", (ofs + safeFrameOffset) + "px");
+      $( "#prompter-safe-frame" ).css("top", clampSafeFrameTop(ofs + safeFrameOffset) + "px");
       var pos = $( "#prompter-control-main" ).offset();
       $( "#prompter-safe-frame" ).css("left", pos.left + "px");
     }
@@ -43,11 +43,23 @@
       }
     }
     
+    function clampSafeFrameTop(top) {
+      var $safeFrame = $( "#prompter-safe-frame");
+      var $textEditor = $( "#prompter-control-main" );
+      var $textScroller = $( "#prompter-control" );
+      
+      // Clamp height if the safe frame is larger than the controller window.
+      if ($safeFrame.height() + 50 > $textScroller.height()) { // Compensate for potential scrollbar height.
+        var maxSafeFrameTop = $textEditor.outerHeight() - $safeFrame.height();
+        return Math.min(maxSafeFrameTop, top);
+      } else return top;
+    }
+    
     function syncPresenter() {
       if (shared.presenter != null && !shared.presenter.closed && shared.presenterScroller != null) {
         var scrollTop = $( "#prompter-control" ).scrollTop();
         shared.presenterScroller.scrollTop(scrollTop);
-        $( "#prompter-safe-frame" ).css("top", (scrollTop + safeFrameOffset) + "px");
+        $( "#prompter-safe-frame" ).css("top", clampSafeFrameTop(scrollTop + safeFrameOffset) + "px");
       }
     }
     
