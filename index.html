@@ -103,7 +103,11 @@
       
       $( window ).resize(function() {
         readjustHeight();
+        
         recalcSafeFrameOffset();
+        var pos = $( "#prompter-control-main" ).offset();
+        $( "#prompter-safe-frame" ).css("left", pos.left + "px");
+      
         syncPresenter();
       });
       
