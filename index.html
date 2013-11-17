@@ -17,6 +17,9 @@
     var shared = { presenter: null, presenterScroller: null, presenterEditor: null };
     var safeFrameOffset = 0;
     var editMode = true;
+    var playing = false;
+    var playingTimer = null;
+    var speed = 2;
     
     function syncController(width, height, ofs) {
       $( "#prompter-control-main" ).width(width);
@@ -62,6 +65,45 @@
     }
     
     $(function() {
+      var updatePresentationStatus = function() {
+        $( "#option-info-status" ).html("Commands: [Spacebar] Play/pause [\u21e6] Decrease speed [\u21e8] Increase speed \u2014 Speed " + speed + " \u2014 " + (playing ? "Playing" : "Stopped"));
+      };
+    
+      var autoScroll = function() {
+        var $scroller = $( "#prompter-control" );
+        $scroller.scrollTop($scroller.scrollTop() + 2 * speed);
+      }
+      
+      var stop = function() {
+        if (playing) {
+          playing = false;
+          clearInterval(playingTimer);
+          playingTimer = null;
+          updatePresentationStatus();
+        }
+      }
+      
+      var play = function() {
+        if (!playing) {
+          playing = true;
+          playingTimer = setInterval(autoScroll, 50);
+          updatePresentationStatus();
+        }
+      }
+    
+      var readjustHeight = function() {
+        if (!Modernizr.flexbox) {
+          $( "#prompter-control" ).height($( "body" ).height() - $( "#prompter-options" ).outerHeight());
+        }
+      };
+      
+      var changeSpeed = function(newSpeed) {
+        if (newSpeed < 0) newSpeed = 0;
+        if (newSpeed > 5) newSpeed = 5;
+        speed = newSpeed;
+        updatePresentationStatus();
+      };
+      
       $( "input[type=submit], a, button" )
         .button()
         .click(function( event ) {
@@ -81,25 +123,21 @@
         .click(function( event ) {
           editMode = !editMode;
           if (editMode) {
-            $(this).button("option", "label", "Lock");
+            if (playing) stop();
+            $(this).button("option", "label", "Present");
             $( "#option-info-status" ).html("Currently in edit mode");
             $( "#prompter-options" ).css({ "color" : "white", "background-color" : "red" });
             $( "#prompter-control-main" ).attr("contenteditable", "true");
           } else {
             $(this).button("option", "label", "Edit");
-            $( "#option-info-status" ).html("Presenting at speed 1 \u2014 [Spacebar] Play/pause [\u21e6] Decrease speed [\u21e8] Increase speed");
+            updatePresentationStatus();
             $( "#prompter-options" ).css({ "color" : "black", "background-color" : "#ddd" });
             $( "#prompter-control-main" ).attr("contenteditable", "false");
+            $( "#prompter-control-main" ).focus();
           }
         });
       
       $( "#prompter-control" ).scroll(syncPresenter);
-      
-      var readjustHeight = function() {
-        if (!Modernizr.flexbox) {
-          $( "#prompter-control" ).height($( "body" ).height() - $( "#prompter-options" ).height());
-        }
-      }
       
       $( window ).resize(function() {
         readjustHeight();
@@ -109,6 +147,28 @@
         $( "#prompter-safe-frame" ).css("left", pos.left + "px");
       
         syncPresenter();
+      });
+      
+      $( document ).keydown(function(e) {
+        if (!editMode) {
+          if (e.which == 37) { // Left arrow
+            changeSpeed(speed - 1);
+            e.preventDefault();
+          } else if (e.which == 39) { // Right arrow
+            changeSpeed(speed + 1);
+            e.preventDefault();
+          } else if (e.which == 32) { // Spacebar
+            if (playing) stop();
+            else play();
+            e.preventDefault();
+          } else if (e.which == 8) { // Backspace
+            e.preventDefault();
+          } else if (e.which >= 48 && e.which <= 53) {
+            speed = e.which - 48;
+            updatePresentationStatus();
+            e.preventDefault();
+          }
+        }
       });
       
       readjustHeight();
@@ -132,8 +192,8 @@
   <body>
     <div class="flex-container" id="presenter">
       <div id="prompter-options">
-        <button id="option-open-presenter">Presenter Window...</button>
-        <button id="option-lock-toggle">Lock</button>
+        <button id="option-open-presenter">Mirrored Display...</button>
+        <button id="option-lock-toggle">Present</button>
         <div class="status" id="option-info-status">Currently in edit mode</div>
       </div>
       <div id="prompter-control">

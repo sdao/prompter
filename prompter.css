@@ -65,6 +65,7 @@ html, body {
   padding: 0.5em;
   margin-left: auto;
   margin-right: auto;
+  outline: none;
 }
 
 #prompter-control {
@@ -106,10 +107,13 @@ html, body {
 }
 
 #prompter-options {
+  white-space: nowrap;
+  overflow: hidden;
   font-size: 0.6em;
   background-color: red;
   color: white;
   width: 100%;
+  border-bottom: 3px solid rgba(255, 255, 255, 0.5);
   
   /* Flexbox */
   -webkit-box-ordinal-group: 1;
@@ -137,4 +141,5 @@ html, body {
   font-weight: bold;
   margin: 0.5em;
   display: inline-block;
+  text-overflow: ellipsis;
 }
