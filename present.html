@@ -12,16 +12,17 @@
     <script src="ckeditor/adapters/jquery.js"></script>
     
     <script>    
+    var $editor = null;
     
     $( document ).ready(function() {
-      $( "#prompter-present-main" ).ckeditor();
+      $editor = $( "#prompter-present-main" ).ckeditor();
     });
     
     var resizeFunc = function() {
       var $prompterMain = $( "#prompter-present-main" );
       var $prompterContainer = $( "#prompter-present" );
       window.opener.syncController($prompterMain.width(), $prompterContainer.height(), $prompterContainer.scrollTop());
-      window.opener.registerPresenterScroller($prompterContainer);
+      window.opener.registerPresenter($prompterContainer, $editor);
     };
     
     $( window ).load(resizeFunc);
@@ -34,7 +35,7 @@
   
   <body>
     <div id="prompter-present">
-      <div class="prompter-main" id="prompter-present-main" contenteditable>
+      <div class="prompter-main" id="prompter-present-main">
         The Knights Who Say Ni demand a sacrifice! Where'd you get the coconuts? Ah, now we see the violence inherent in the system! 
         You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person! I blow my nose at you, so-called 
         Ah-thoor Keeng, you and all your silly English K-n-n-n-n-n-n-n-niggits! And the hat. She's a witch! Oh! Come and see the 

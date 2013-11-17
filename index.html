@@ -14,8 +14,9 @@
     
     <script>
     
-    var shared = { presenter: null, presenterScroller: null };
+    var shared = { presenter: null, presenterScroller: null, presenterEditor: null };
     var safeFrameOffset = 0;
+    var editMode = true;
     
     function syncController(width, height, ofs) {
       $( "#prompter-control-main" ).width(width);
@@ -26,7 +27,7 @@
       $( "#prompter-safe-frame" ).width(width);
       $( "#prompter-safe-frame" ).height(height);
       $( "#prompter-safe-frame" ).css("top", (ofs + safeFrameOffset) + "px");
-      var pos = $( ".prompter-main" ).offset();
+      var pos = $( "#prompter-control-main" ).offset();
       $( "#prompter-safe-frame" ).css("left", pos.left + "px");
     }
     
@@ -47,13 +48,15 @@
       }
     }
     
-    function registerPresenterScroller(scroller) {
+    function registerPresenter(scroller, editor) {
       shared.presenterScroller = scroller;
+      shared.presenterEditor = editor;
     }
     
     function presenterDidClose() {
       shared.presenter = null;
       shared.presenterScroller = null;
+      shared.presenterEditor = null;
       
       $( "#prompter-safe-frame" ).hide();
     }
@@ -63,16 +66,32 @@
         .button()
         .click(function( event ) {
           event.preventDefault();
-      });
+        });
       
-      $( "#prompter-options button" )
+      $( "#option-open-presenter" )
         .click(function( event ) {
           if (shared.presenter == null || shared.presenter.closed) {
             shared.presenter = window.open("present.html", "PresenterWindow", "resizable=yes, scrollbars=no, menubar=no");
           } else {
             shared.presenter.focus();
           }
-      });
+        });
+      
+      $( "#option-lock-toggle" )
+        .click(function( event ) {
+          editMode = !editMode;
+          if (editMode) {
+            $(this).button("option", "label", "Lock");
+            $( "#option-info-status" ).html("Currently in edit mode");
+            $( "#prompter-options" ).css({ "color" : "white", "background-color" : "red" });
+            $( "#prompter-control-main" ).attr("contenteditable", "true");
+          } else {
+            $(this).button("option", "label", "Edit");
+            $( "#option-info-status" ).html("Presenting at speed 1 \u2014 [Spacebar] Play/pause [\u21e9] Decrease speed [\u21e7] Increase speed");
+            $( "#prompter-options" ).css({ "color" : "black", "background-color" : "#ddd" });
+            $( "#prompter-control-main" ).attr("contenteditable", "false");
+          }
+        });
       
       $( "#prompter-control" ).scroll(syncPresenter);
       
@@ -92,7 +111,14 @@
     });
     
     $( document ).ready( function() {
-      $( "#prompter-control-main" ).ckeditor();
+      var $editor = $( "#prompter-control-main" ).ckeditor();
+      $editor.editor.on("change", function () {
+        if (shared.presenter != null && !shared.presenter.closed && shared.presenterEditor != null) {
+          shared.presenterEditor.editor.setData($editor.editor.getData());
+          syncPresenter();
+        }
+      });
+      
       $( "#prompter-safe-frame" ).hide();
     } );
 
@@ -102,13 +128,14 @@
   <body>
     <div class="flex-container" id="presenter">
       <div id="prompter-options">
-        <button>Presenter Window...</button>
-        <div class="status">Currently in edit mode</div>
+        <button id="option-open-presenter">Presenter Window...</button>
+        <button id="option-lock-toggle">Lock</button>
+        <div class="status" id="option-info-status">Currently in edit mode</div>
       </div>
       <div id="prompter-control">
         <div id="prompter-top-spacer">
         </div>
-        <div class="prompter-main" id="prompter-control-main" contenteditable>
+        <div class="prompter-main" id="prompter-control-main" contenteditable="true">
           The Knights Who Say Ni demand a sacrifice! Where'd you get the coconuts? Ah, now we see the violence inherent in the system! 
           You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person! I blow my nose at you, so-called 
           Ah-thoor Keeng, you and all your silly English K-n-n-n-n-n-n-n-niggits! And the hat. She's a witch! Oh! Come and see the 
