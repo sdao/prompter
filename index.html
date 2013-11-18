@@ -145,7 +145,11 @@
             updatePresentationStatus();
             $( "#prompter-options" ).css({ "color" : "black", "background-color" : "#ddd" });
             $( "#prompter-control-main" ).attr("contenteditable", "false");
-            $( "#prompter-control-main" ).focus();
+            
+            var $prompterControlMain = $( "#prompter-control-main" );
+            var oldScrollTop = $prompterControlMain.scrollTop();
+            $prompterControlMain.focus();
+            $prompterControlMain.scrollTop(oldScrollTop);
           }
         });
       
