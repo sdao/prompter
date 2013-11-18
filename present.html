@@ -21,8 +21,8 @@
     var resizeFunc = function() {
       var $prompterMain = $( "#prompter-present-main" );
       var $prompterContainer = $( "#prompter-present" );
-      window.opener.syncController($prompterMain.width(), $prompterContainer.height(), $prompterContainer.scrollTop());
       window.opener.registerPresenter($prompterContainer, $editor);
+      window.opener.syncController($prompterMain.width(), $prompterContainer.height(), $prompterContainer.scrollTop());
     };
     
     $( window ).load(resizeFunc);

@@ -66,6 +66,7 @@
     function registerPresenter(scroller, editor) {
       shared.presenterScroller = scroller;
       shared.presenterEditor = editor;
+      syncText();
     }
     
     function presenterDidClose() {
@@ -74,6 +75,13 @@
       shared.presenterEditor = null;
       
       $( "#prompter-safe-frame" ).hide();
+    }
+    
+    function syncText() {
+      if (shared.presenter != null && !shared.presenter.closed && shared.presenterEditor != null) {
+        shared.presenterEditor.editor.setData($( "#prompter-control-main" ).ckeditor().editor.getData());
+        syncPresenter();
+      }
     }
     
     $(function() {
@@ -191,14 +199,7 @@
     });
     
     $( document ).ready( function() {
-      var $editor = $( "#prompter-control-main" ).ckeditor();
-      $editor.editor.on("change", function () {
-        if (shared.presenter != null && !shared.presenter.closed && shared.presenterEditor != null) {
-          shared.presenterEditor.editor.setData($editor.editor.getData());
-          syncPresenter();
-        }
-      });
-      
+      $( "#prompter-control-main" ).ckeditor().editor.on("change", syncText);
       $( "#prompter-safe-frame" ).hide();
     } );
 
