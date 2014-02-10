@@ -4,6 +4,11 @@ html, body {
   font-family: "Helvetica", "Arial", sans-serif;
 }
 
+p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .flex-container {
   height: 100%;
   
@@ -40,7 +45,7 @@ html, body {
 
 .prompter-main,
 #prompter-safe-frame {
-  font-size: 5em;
+  font-size: 3em;
 }
 
 #prompter-safe-frame {
@@ -62,7 +67,7 @@ html, body {
   min-height: 500px;
   line-height: 1.5em;
   box-sizing: border-box;
-  padding: 0.5em;
+  padding: 0.5em 0.5em 8.0em 0.5em;
   margin-left: auto;
   margin-right: auto;
   outline: none;

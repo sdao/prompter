@@ -19,7 +19,7 @@
     var editMode = true;
     var playing = false;
     var playingTimer = null;
-    var speed = 2;
+    var speed = 4;
     
     function syncController(width, height, ofs) {
       $( "#prompter-control-main" ).width(width);
@@ -86,12 +86,12 @@
     
     $(function() {
       var updatePresentationStatus = function() {
-        $( "#option-info-status" ).html("Commands: [Spacebar] Play/pause [\u2190] Decrease speed [\u2192] Increase speed \u2014 Speed " + speed + "/5 \u2014 " + (playing ? "Playing" : "Stopped"));
+        $( "#option-info-status" ).html("Commands: [Spacebar] Play/pause [\u2190] Decrease speed [\u2192] Increase speed \u2014 Speed " + speed + "/10 \u2014 " + (playing ? "Playing" : "Stopped"));
       };
     
       var autoScroll = function() {
         var $scroller = $( "#prompter-control" );
-        $scroller.scrollTop($scroller.scrollTop() + 2 * speed);
+        $scroller.scrollTop($scroller.scrollTop() + speed);
       }
       
       var stop = function() {
@@ -119,7 +119,7 @@
       
       var changeSpeed = function(newSpeed) {
         if (newSpeed < 0) newSpeed = 0;
-        if (newSpeed > 5) newSpeed = 5;
+        if (newSpeed > 10) newSpeed = 10;
         speed = newSpeed;
         updatePresentationStatus();
       };
