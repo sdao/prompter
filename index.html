@@ -75,6 +75,8 @@
       shared.presenterEditor = null;
       
       $( "#prompter-safe-frame" ).hide();
+      $( "#prompter-top-spacer" ).height(0);
+      $( "#prompter-control-main" ).css("width", "inherit");
     }
     
     function syncText() {
@@ -154,10 +156,9 @@
             $( "#prompter-options" ).css({ "color" : "black", "background-color" : "#ddd" });
             $( "#prompter-control-main" ).attr("contenteditable", "false");
             
-            var $prompterControlMain = $( "#prompter-control-main" );
-            var oldScrollTop = $prompterControlMain.scrollTop();
-            $prompterControlMain.focus();
-            $prompterControlMain.scrollTop(oldScrollTop);
+            var oldScrollTop = $( "#prompter-control" ).scrollTop();
+            $( "#prompter-control-main" ).focus();
+            $( "#prompter-control" ).scrollTop(oldScrollTop);
           }
         });
       

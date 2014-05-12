@@ -25,9 +25,11 @@
       window.opener.syncController($prompterMain.width(), $prompterContainer.height(), $prompterContainer.scrollTop());
     };
     
-    $( window ).load(resizeFunc);
+    $( window ).load(function() {
+      setTimeout(resizeFunc, 500); // Fixes some bugs. Hacky!
+    });
     $( window ).resize(resizeFunc);
-    $( window ).on( "unload", function() {
+    $( window ).on("unload", function() {
       window.opener.presenterDidClose();
     });
     </script>
