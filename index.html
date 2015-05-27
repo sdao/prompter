@@ -4,27 +4,27 @@
     <title>Prompter</title>
     <link rel="stylesheet" href="prompter.css" />
 		<meta charset="utf-8" />
-    
-    <link rel="stylesheet" href="http:////ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
+
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
     <script src="ckeditor/ckeditor.js"></script>
     <script src="ckeditor/adapters/jquery.js"></script>
     <script src="modernizr.custom.47613.js"></script>
-    
+
     <script>
-    
+
     var shared = { presenter: null, presenterScroller: null, presenterEditor: null };
     var safeFrameOffset = 0;
     var editMode = true;
     var playing = false;
     var playingTimer = null;
     var speed = 4;
-    
+
     function syncController(width, height, ofs) {
       $( "#prompter-control-main" ).width(width);
       $( "#prompter-control" ).scrollTop(ofs);
-      
+
       recalcSafeFrameOffset();
       $( "#prompter-safe-frame" ).show();
       $( "#prompter-safe-frame" ).width(width);
@@ -33,7 +33,7 @@
       var pos = $( "#prompter-control-main" ).offset();
       $( "#prompter-safe-frame" ).css("left", pos.left + "px");
     }
-    
+
     function recalcSafeFrameOffset() {
       if ($( "#prompter-safe-frame" ).is(":visible")) {
         var safeFrameHeight = $( "#prompter-safe-frame" ).height();
@@ -42,19 +42,19 @@
         $( "#prompter-top-spacer" ).height(safeFrameOffset);
       }
     }
-    
+
     function clampSafeFrameTop(top) {
       var $safeFrame = $( "#prompter-safe-frame");
       var $textEditor = $( "#prompter-control-main" );
       var $textScroller = $( "#prompter-control" );
-      
+
       // Clamp height if the safe frame is larger than the controller window.
       if ($safeFrame.height() + 50 > $textScroller.height()) { // Compensate for potential scrollbar height.
         var maxSafeFrameTop = $textEditor.outerHeight() - $safeFrame.height();
         return Math.min(maxSafeFrameTop, top);
       } else return top;
     }
-    
+
     function syncPresenter() {
       if (shared.presenter != null && !shared.presenter.closed && shared.presenterScroller != null) {
         var scrollTop = $( "#prompter-control" ).scrollTop();
@@ -62,40 +62,40 @@
         $( "#prompter-safe-frame" ).css("top", clampSafeFrameTop(scrollTop + safeFrameOffset) + "px");
       }
     }
-    
+
     function registerPresenter(scroller, editor) {
       shared.presenterScroller = scroller;
       shared.presenterEditor = editor;
       syncText();
     }
-    
+
     function presenterDidClose() {
       shared.presenter = null;
       shared.presenterScroller = null;
       shared.presenterEditor = null;
-      
+
       $( "#prompter-safe-frame" ).hide();
       $( "#prompter-top-spacer" ).height(0);
       $( "#prompter-control-main" ).css("width", "inherit");
     }
-    
+
     function syncText() {
       if (shared.presenter != null && !shared.presenter.closed && shared.presenterEditor != null) {
         shared.presenterEditor.editor.setData($( "#prompter-control-main" ).ckeditor().editor.getData());
         syncPresenter();
       }
     }
-    
+
     $(function() {
       var updatePresentationStatus = function() {
         $( "#option-info-status" ).html("Commands: [Spacebar] Play/pause [\u2190] Decrease speed [\u2192] Increase speed \u2014 Speed " + speed + "/10 \u2014 " + (playing ? "Playing" : "Stopped"));
       };
-    
+
       var autoScroll = function() {
         var $scroller = $( "#prompter-control" );
         $scroller.scrollTop($scroller.scrollTop() + speed);
       }
-      
+
       var stop = function() {
         if (playing) {
           playing = false;
@@ -104,7 +104,7 @@
           updatePresentationStatus();
         }
       }
-      
+
       var play = function() {
         if (!playing) {
           playing = true;
@@ -112,26 +112,26 @@
           updatePresentationStatus();
         }
       }
-    
+
       var readjustHeight = function() {
         if (!Modernizr.flexbox) {
           $( "#prompter-control" ).height($( "body" ).height() - $( "#prompter-options" ).outerHeight());
         }
       };
-      
+
       var changeSpeed = function(newSpeed) {
         if (newSpeed < 0) newSpeed = 0;
         if (newSpeed > 10) newSpeed = 10;
         speed = newSpeed;
         updatePresentationStatus();
       };
-      
+
       $( "input[type=submit], a, button" )
         .button()
         .click(function( event ) {
           event.preventDefault();
         });
-      
+
       $( "#option-open-presenter" )
         .click(function( event ) {
           if (shared.presenter == null || shared.presenter.closed) {
@@ -140,7 +140,7 @@
             shared.presenter.focus();
           }
         });
-      
+
       $( "#option-lock-toggle" )
         .click(function( event ) {
           editMode = !editMode;
@@ -155,25 +155,25 @@
             updatePresentationStatus();
             $( "#prompter-options" ).css({ "color" : "black", "background-color" : "#ddd" });
             $( "#prompter-control-main" ).attr("contenteditable", "false");
-            
+
             var oldScrollTop = $( "#prompter-control" ).scrollTop();
             $( "#prompter-control-main" ).focus();
             $( "#prompter-control" ).scrollTop(oldScrollTop);
           }
         });
-      
+
       $( "#prompter-control" ).scroll(syncPresenter);
-      
+
       $( window ).resize(function() {
         readjustHeight();
-        
+
         recalcSafeFrameOffset();
         var pos = $( "#prompter-control-main" ).offset();
         $( "#prompter-safe-frame" ).css("left", pos.left + "px");
-      
+
         syncPresenter();
       });
-      
+
       $( document ).keydown(function(e) {
         if (!editMode) {
           if (e.which == 37) { // Left arrow
@@ -195,10 +195,10 @@
           }
         }
       });
-      
+
       readjustHeight();
     });
-    
+
     $( document ).ready( function() {
       $( "#prompter-control-main" ).ckeditor().editor.on("change", syncText);
       $( "#prompter-safe-frame" ).hide();
@@ -206,7 +206,7 @@
 
     </script>
   </head>
-  
+
   <body>
     <div class="flex-container" id="presenter">
       <div id="prompter-options">
@@ -218,9 +218,9 @@
         <div id="prompter-top-spacer">
         </div>
         <div class="prompter-main" id="prompter-control-main" contenteditable="true">
-          The Knights Who Say Ni demand a sacrifice! Where'd you get the coconuts? Ah, now we see the violence inherent in the system! 
-          You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person! I blow my nose at you, so-called 
-          Ah-thoor Keeng, you and all your silly English K-n-n-n-n-n-n-n-niggits! And the hat. She's a witch! Oh! Come and see the 
+          The Knights Who Say Ni demand a sacrifice! Where'd you get the coconuts? Ah, now we see the violence inherent in the system!
+          You don't frighten us, English pig-dogs! Go and boil your bottoms, sons of a silly person! I blow my nose at you, so-called
+          Ah-thoor Keeng, you and all your silly English K-n-n-n-n-n-n-n-niggits! And the hat. She's a witch! Oh! Come and see the
           violence inherent in the system! Help, help, I'm being repressed!
         </div>
         <div id="prompter-safe-frame">
